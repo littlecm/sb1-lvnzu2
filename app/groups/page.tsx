@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from "@/components/ui/use-toast"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Group {
@@ -23,7 +22,6 @@ export default function Groups() {
     updateTimes: [], 
     rules: '' 
   });
-  const { toast } = useToast()
 
   const updateTimeOptions = Array.from({ length: 24 }, (_, i) => 
     `${String(i).padStart(2, '0')}:00`
@@ -49,10 +47,7 @@ export default function Groups() {
     e.preventDefault();
     setGroups([...groups, newGroup]);
     setNewGroup({ name: '', csvInput: '', updateTimes: [], rules: '' });
-    toast({
-      title: "Group added",
-      description: `${newGroup.name} has been added successfully.`,
-    })
+    console.log(`Group ${newGroup.name} has been added successfully.`);
   };
 
   return (
