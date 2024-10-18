@@ -8,9 +8,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from "@/components/ui/use-toast"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
+interface Group {
+  name: string;
+  csvInput: string;
+  updateTimes: string[];
+  rules: string;
+}
+
 export default function Groups() {
-  const [groups, setGroups] = useState([]);
-  const [newGroup, setNewGroup] = useState({ 
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [newGroup, setNewGroup] = useState<Group>({ 
     name: '', 
     csvInput: '', 
     updateTimes: [], 
@@ -22,23 +29,23 @@ export default function Groups() {
     `${String(i).padStart(2, '0')}:00`
   );
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setNewGroup({ ...newGroup, [name]: value });
   };
 
-  const handleUpdateTimeChange = (value) => {
+  const handleUpdateTimeChange = (value: string) => {
     setNewGroup({ ...newGroup, updateTimes: [...newGroup.updateTimes, value] });
   };
 
-  const removeUpdateTime = (time) => {
+  const removeUpdateTime = (time: string) => {
     setNewGroup({ 
       ...newGroup, 
       updateTimes: newGroup.updateTimes.filter(t => t !== time) 
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setGroups([...groups, newGroup]);
     setNewGroup({ name: '', csvInput: '', updateTimes: [], rules: '' });
