@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from "@/components/ui/use-toast"
 import { PlusCircle, Trash2 } from 'lucide-react';
 
 interface Field {
@@ -27,7 +26,6 @@ export default function Channels() {
     group: '', 
     fields: [{ name: '', sourceField: '', rule: '' }] 
   });
-  const { toast } = useToast()
 
   // Mock groups data (replace with actual data in a real application)
   const groups = ['Group 1', 'Group 2', 'Group 3'];
@@ -67,18 +65,12 @@ export default function Channels() {
     e.preventDefault();
     setChannels([...channels, newChannel]);
     setNewChannel({ name: '', group: '', fields: [{ name: '', sourceField: '', rule: '' }] });
-    toast({
-      title: "Channel added",
-      description: `${newChannel.name} has been added successfully.`,
-    })
+    console.log(`Channel ${newChannel.name} has been added successfully.`);
   };
 
   const handleDownload = (channelName: string) => {
     // In a real application, this would generate and download the CSV file
-    toast({
-      title: "Download started",
-      description: `Downloading ${channelName}.csv`,
-    })
+    console.log(`Downloading ${channelName}.csv`);
   };
 
   return (
