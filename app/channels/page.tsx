@@ -8,9 +8,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from "@/components/ui/use-toast"
 import { PlusCircle, Trash2 } from 'lucide-react';
 
+interface Field {
+  name: string;
+  sourceField: string;
+  rule: string;
+}
+
+interface Channel {
+  name: string;
+  group: string;
+  fields: Field[];
+}
+
 export default function Channels() {
-  const [channels, setChannels] = useState([]);
-  const [newChannel, setNewChannel] = useState({ 
+  const [channels, setChannels] = useState<Channel[]>([]);
+  const [newChannel, setNewChannel] = useState<Channel>({ 
     name: '', 
     group: '', 
     fields: [{ name: '', sourceField: '', rule: '' }] 
@@ -23,16 +35,16 @@ export default function Channels() {
   // Mock source fields (replace with actual fields from the selected group's CSV)
   const sourceFields = ['VIN', 'Make', 'Model', 'Year', 'Price', 'Color'];
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewChannel({ ...newChannel, [name]: value });
   };
 
-  const handleGroupSelect = (value) => {
+  const handleGroupSelect = (value: string) => {
     setNewChannel({ ...newChannel, group: value });
   };
 
-  const handleFieldChange = (index, field, value) => {
+  const handleFieldChange = (index: number, field: keyof Field, value: string) => {
     const updatedFields = newChannel.fields.map((f, i) => 
       i === index ? { ...f, [field]: value } : f
     );
@@ -46,12 +58,12 @@ export default function Channels() {
     });
   };
 
-  const removeField = (index) => {
+  const removeField = (index: number) => {
     const updatedFields = newChannel.fields.filter((_, i) => i !== index);
     setNewChannel({ ...newChannel, fields: updatedFields });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setChannels([...channels, newChannel]);
     setNewChannel({ name: '', group: '', fields: [{ name: '', sourceField: '', rule: '' }] });
@@ -61,7 +73,7 @@ export default function Channels() {
     })
   };
 
-  const handleDownload = (channelName) => {
+  const handleDownload = (channelName: string) => {
     // In a real application, this would generate and download the CSV file
     toast({
       title: "Download started",
