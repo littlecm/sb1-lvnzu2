@@ -6,12 +6,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Papa from 'papaparse';
 
 interface Group {
   name: string;
   csvInput: string;
   updateTimes: string[];
   rules: string;
+  csvData?: any[];
 }
 
 export default function Groups() {
@@ -20,7 +22,8 @@ export default function Groups() {
     name: '', 
     csvInput: '', 
     updateTimes: [], 
-    rules: '' 
+    rules: '', 
+    csvData: [] 
   });
 
   const updateTimeOptions = Array.from({ length: 24 }, (_, i) => 
@@ -43,10 +46,33 @@ export default function Groups() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const fetchCsvData = async (url: string) => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch CSV data from ${url}`);
+      }
+      const csvText = await response.text();
+      const parsedData = Papa.parse(csvText, { header: true });
+      return parsedData.data;
+    } catch (error) {
+      console.error('Error fetching or parsing CSV:', error);
+      return [];
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setGroups([...groups, newGroup]);
-    setNewGroup({ name: '', csvInput: '', updateTimes: [], rules: '' });
+
+    // Fetch and parse the CSV data
+    const csvData = await fetchCsvData(newGroup.csvInput);
+    
+    // Add the new group with the parsed CSV data
+    setGroups([...groups, { ...newGroup, csvData }]);
+    
+    // Reset the newGroup state
+    setNewGroup({ name: '', csvInput: '', updateTimes: [], rules: '', csvData: [] });
+    
     console.log(`Group ${newGroup.name} has been added successfully.`);
   };
 
@@ -121,6 +147,7 @@ export default function Groups() {
             <p>CSV Input: {group.csvInput}</p>
             <p>Update Times: {group.updateTimes.join(', ')}</p>
             <p>Rules: {group.rules}</p>
+            <p>CSV Data Sample: {JSON.stringify(group.csvData?.[0] || {}, null, 2)}</p>
           </div>
         ))}
       </div>
