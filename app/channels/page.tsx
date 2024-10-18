@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PlusCircle, Trash2 } from 'lucide-react';
+import { useGroups } from './Groups';
 
 interface Field {
   name: string;
@@ -20,18 +21,13 @@ interface Channel {
 }
 
 export default function Channels() {
+  const { groups } = useGroups();
   const [channels, setChannels] = useState<Channel[]>([]);
   const [newChannel, setNewChannel] = useState<Channel>({ 
     name: '', 
     group: '', 
     fields: [{ name: '', sourceField: '', rule: '' }] 
   });
-
-  // Mock groups data (replace with actual data in a real application)
-  const groups = ['Group 1', 'Group 2', 'Group 3'];
-
-  // Mock source fields (replace with actual fields from the selected group's CSV)
-  const sourceFields = ['VIN', 'Make', 'Model', 'Year', 'Price', 'Color'];
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -68,9 +64,9 @@ export default function Channels() {
     console.log(`Channel ${newChannel.name} has been added successfully.`);
   };
 
-  const handleDownload = (channelName: string) => {
-    // In a real application, this would generate and download the CSV file
-    console.log(`Downloading ${channelName}.csv`);
+  const getSourceFieldsForGroup = (groupName: string) => {
+    const group = groups.find(g => g.name === groupName);
+    return group ? group.fields : [];
   };
 
   return (
@@ -95,7 +91,7 @@ export default function Channels() {
             </SelectTrigger>
             <SelectContent>
               {groups.map((group) => (
-                <SelectItem key={group} value={group}>{group}</SelectItem>
+                <SelectItem key={group.name} value={group.name}>{group.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -118,7 +114,7 @@ export default function Channels() {
                   <SelectValue placeholder="Source field" />
                 </SelectTrigger>
                 <SelectContent>
-                  {sourceFields.map((sf) => (
+                  {getSourceFieldsForGroup(newChannel.group).map((sf) => (
                     <SelectItem key={sf} value={sf}>{sf}</SelectItem>
                   ))}
                 </SelectContent>
@@ -154,9 +150,6 @@ export default function Channels() {
                 </li>
               ))}
             </ul>
-            <Button onClick={() => handleDownload(channel.name)} className="mt-2">
-              Download CSV
-            </Button>
           </div>
         ))}
       </div>
